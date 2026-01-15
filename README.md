@@ -21,71 +21,57 @@
 
 ## ✨ Features
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/96/000000/edit.png" width="60"/>
-      <br><b>Journal Posts</b>
-      <br><sub>テキスト＋画像付き日記</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/96/000000/happy.png" width="60"/>
-      <br><b>Mood Tracking</b>
-      <br><sub>気分タグで感情記録</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/96/000000/brain.png" width="60"/>
-      <br><b>AI Analysis</b>
-      <br><sub>GPT-4による深層分析</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/96/000000/combo-chart.png" width="60"/>
-      <br><b>Visualization</b>
-      <br><sub>感情・性格の可視化</sub>
-    </td>
-  </tr>
-</table>
+|  |  |  |  |
+|:---:|:---:|:---:|:---:|
+| **📝** | **😊** | **🤖** | **📊** |
+| **Journal** | **Mood** | **AI Analysis** | **Insights** |
+| テキスト＋画像 | 気分タグ記録 | GPT-4分析 | データ可視化 |
 
-### AI分析の内容
+<br>
 
-| 分析項目 | 説明 |
-|:---:|:---|
-| 🎭 **感情スコア** | Joy, Sadness, Anger, Fear, Surprise の5感情を数値化 |
-| 🧠 **性格特性** | Big Five モデル（開放性・誠実性・外向性・協調性・神経症傾向） |
-| 🏷️ **トピック抽出** | 日記から主要トピックを自動抽出 |
-| 💡 **興味関心** | 継続的な興味・関心領域を特定 |
-| 📊 **総合サマリー** | 複数投稿を横断した傾向分析 |
+### 🔍 AI分析の内容
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  感情スコア    Joy • Sadness • Anger • Fear • Surprise         │
+├─────────────────────────────────────────────────────────────────┤
+│  性格特性      Big Five（開放性・誠実性・外向性・協調性・神経症）  │
+├─────────────────────────────────────────────────────────────────┤
+│  トピック      日記から主要トピックを自動抽出                     │
+├─────────────────────────────────────────────────────────────────┤
+│  興味関心      継続的な興味・関心領域を特定                       │
+├─────────────────────────────────────────────────────────────────┤
+│  サマリー      複数投稿を横断した傾向分析                         │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## 🛠 Tech Stack
 
-<table>
-  <tr>
-    <th align="center">Frontend</th>
-    <th align="center">Backend</th>
-    <th align="center">Database</th>
-    <th align="center">AI</th>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="https://skillicons.dev/icons?i=nextjs,ts,tailwind" /><br>
-      <sub>Next.js 14 • TypeScript<br>Tailwind CSS • shadcn/ui<br>TanStack Query • Recharts</sub>
-    </td>
-    <td align="center">
-      <img src="https://skillicons.dev/icons?i=python,fastapi" /><br>
-      <sub>Python 3.11+<br>FastAPI • SQLAlchemy 2.0<br>Pydantic • JWT Auth</sub>
-    </td>
-    <td align="center">
-      <img src="https://skillicons.dev/icons?i=postgres,docker" /><br>
-      <sub>PostgreSQL 15<br>Docker Compose<br>Alembic Migrations</sub>
-    </td>
-    <td align="center">
-      <img src="https://img.icons8.com/fluency/96/000000/chatgpt.png" width="48"/><br>
-      <sub>OpenAI API<br>GPT-4</sub>
-    </td>
-  </tr>
-</table>
+<div align="center">
+
+**Frontend**
+
+![Next.js](https://img.shields.io/badge/Next.js_14-000?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![React Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white)
+
+**Backend**
+
+![Python](https://img.shields.io/badge/Python_3.11+-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000?style=flat-square&logo=jsonwebtokens&logoColor=white)
+
+**Infrastructure**
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_15-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI_GPT--4-412991?style=flat-square&logo=openai&logoColor=white)
+
+</div>
 
 ---
 
