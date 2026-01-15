@@ -13,41 +13,43 @@
   <b>日記を分析してあなたの感情・性格傾向を可視化するアプリケーション</b>
 </p>
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [API](#-api-endpoints) • [Structure](#-project-structure)
+[Features](#features) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [API](#api-endpoints) • [Structure](#project-structure)
 
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
-|  |  |  |  |
+<div align="center">
+
+| Journal | Mood | AI Analysis | Insights |
 |:---:|:---:|:---:|:---:|
-| **📝** | **😊** | **🤖** | **📊** |
-| **Journal** | **Mood** | **AI Analysis** | **Insights** |
 | テキスト＋画像 | 気分タグ記録 | GPT-4分析 | データ可視化 |
+
+</div>
 
 <br>
 
-### 🔍 AI分析の内容
+### AI Analysis
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  感情スコア    Joy • Sadness • Anger • Fear • Surprise         │
+│  Emotions      Joy • Sadness • Anger • Fear • Surprise          │
 ├─────────────────────────────────────────────────────────────────┤
-│  性格特性      Big Five（開放性・誠実性・外向性・協調性・神経症）  │
+│  Personality   Big Five Model (O・C・E・A・N)                    │
 ├─────────────────────────────────────────────────────────────────┤
-│  トピック      日記から主要トピックを自動抽出                     │
+│  Topics        Auto-extracted from journal entries              │
 ├─────────────────────────────────────────────────────────────────┤
-│  興味関心      継続的な興味・関心領域を特定                       │
+│  Interests     Identify recurring themes                        │
 ├─────────────────────────────────────────────────────────────────┤
-│  サマリー      複数投稿を横断した傾向分析                         │
+│  Summary       Cross-post trend analysis                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 <div align="center">
 
@@ -75,7 +77,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -86,7 +88,7 @@ Docker & Docker Compose  •  Node.js 18+  •  Python 3.11+
 ### Installation
 
 <details>
-<summary><b>1️⃣ Clone & Setup Database</b></summary>
+<summary><b>1. Clone & Setup Database</b></summary>
 
 ```bash
 # Clone the repository
@@ -100,7 +102,7 @@ docker-compose up -d
 </details>
 
 <details>
-<summary><b>2️⃣ Backend Setup</b></summary>
+<summary><b>2. Backend Setup</b></summary>
 
 ```bash
 cd backend
@@ -126,7 +128,7 @@ uvicorn app.main:app --reload --port 8000
 </details>
 
 <details>
-<summary><b>3️⃣ Frontend Setup</b></summary>
+<summary><b>3. Frontend Setup</b></summary>
 
 ```bash
 cd frontend
@@ -143,17 +145,17 @@ npm run dev
 
 </details>
 
-### 🔗 Access Points
+### Access Points
 
 | Service | URL |
-|:---:|:---|
-| 🌐 Frontend | http://localhost:3000 |
-| ⚡ Backend API | http://localhost:8000 |
-| 📚 API Docs | http://localhost:8000/docs |
+|:---|:---|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| API Docs | http://localhost:8000/docs |
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 <details>
 <summary><b>Backend (.env)</b></summary>
@@ -177,59 +179,60 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 <details>
-<summary><b>🔑 Authentication</b></summary>
+<summary><b>Authentication</b></summary>
 
 | Method | Endpoint | Description |
 |:---:|:---|:---|
-| `POST` | `/api/v1/auth/register` | ユーザー登録 |
-| `POST` | `/api/v1/auth/login` | ログイン |
-| `GET` | `/api/v1/auth/me` | 現在のユーザー情報 |
+| `POST` | `/api/v1/auth/register` | Register |
+| `POST` | `/api/v1/auth/login` | Login |
+| `GET` | `/api/v1/auth/me` | Current user |
 
 </details>
 
 <details>
-<summary><b>📝 Posts</b></summary>
+<summary><b>Posts</b></summary>
 
 | Method | Endpoint | Description |
 |:---:|:---|:---|
-| `GET` | `/api/v1/posts` | 投稿一覧 |
-| `GET` | `/api/v1/posts/{id}` | 投稿詳細 |
-| `POST` | `/api/v1/posts` | 投稿作成 |
-| `PUT` | `/api/v1/posts/{id}` | 投稿更新 |
-| `DELETE` | `/api/v1/posts/{id}` | 投稿削除 |
+| `GET` | `/api/v1/posts` | List posts |
+| `GET` | `/api/v1/posts/{id}` | Get post |
+| `POST` | `/api/v1/posts` | Create post |
+| `PUT` | `/api/v1/posts/{id}` | Update post |
+| `DELETE` | `/api/v1/posts/{id}` | Delete post |
 
 </details>
 
 <details>
-<summary><b>🧠 Analyses</b></summary>
+<summary><b>Analyses</b></summary>
 
 | Method | Endpoint | Description |
 |:---:|:---|:---|
-| `POST` | `/api/v1/analyses/create` | AI分析実行 |
-| `GET` | `/api/v1/analyses/post/{post_id}` | 投稿の分析結果 |
-| `GET` | `/api/v1/analyses/user/summary` | ユーザーサマリー |
+| `POST` | `/api/v1/analyses/create` | Run analysis |
+| `GET` | `/api/v1/analyses/post/{post_id}` | Get result |
+| `GET` | `/api/v1/analyses/user/summary` | User summary |
 
 </details>
 
 <details>
-<summary><b>📤 Uploads</b></summary>
+<summary><b>Uploads</b></summary>
 
 | Method | Endpoint | Description |
 |:---:|:---|:---|
-| `POST` | `/api/v1/uploads/image` | 画像アップロード |
+| `POST` | `/api/v1/uploads/image` | Upload image |
 
 </details>
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 soulmap/
-├── 🐍 backend/
+│
+├── backend/
 │   ├── app/
 │   │   ├── api/v1/          # API endpoints
 │   │   ├── core/            # Security & AI service
@@ -241,19 +244,19 @@ soulmap/
 │   ├── alembic/             # Migrations
 │   └── requirements.txt
 │
-├── ⚛️ frontend/
+├── frontend/
 │   ├── app/                 # Next.js App Router
 │   ├── components/          # React components
 │   ├── hooks/               # Custom hooks
 │   ├── lib/                 # Utilities
 │   └── types/               # TypeScript definitions
 │
-└── 🐳 docker-compose.yml
+└── docker-compose.yml
 ```
 
 ---
 
-## 📄 License
+## License
 
 <div align="center">
 
