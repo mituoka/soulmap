@@ -1,8 +1,8 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:15
     container_name: soulmap-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: soulmap
       POSTGRES_PASSWORD: soulmap123
@@ -16,6 +16,34 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  backend:
+    build: ./backend
+    container_name: soulmap-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://soulmap:soulmap123@postgres:5432/soulmap_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: soulmap-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
