@@ -5,7 +5,7 @@
 
 <!-- Badges -->
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Rust](https://img.shields.io/badge/Rust-Axum-000?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 
@@ -27,6 +27,7 @@
 |:---:|:---:|:---:|:---:|
 | テキスト投稿 | 複数画像対応 | Gemini分析 | ライト/ダーク切替 |
 | 検索・フィルタ | D&D/ペースト | 感情・性格分析 | システム連動 |
+| TODOリスト | 画像変換対応 | 傾向サマリー | - |
 
 </div>
 
@@ -55,6 +56,12 @@
 - **ペースト対応**: クリップボードから画像を貼り付け
 - **検索・フィルタ**: キーワード検索、日付範囲でのフィルタリング
 
+### ダッシュボード
+
+- **TODOリスト**: 日別タスク管理（翌日自動リセット）
+- **統計表示**: 投稿数、分析数、関心事
+- **最近の投稿**: 直近の投稿を表示
+
 ### テーマ切り替え
 
 - **ライトモード**: 明るい配色
@@ -76,9 +83,9 @@
 
 **バックエンド**
 
-![Python](https://img.shields.io/badge/Python_3.11+-3776AB?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-000?style=flat-square&logo=rust&logoColor=white)
+![Axum](https://img.shields.io/badge/Axum-000?style=flat-square&logo=rust&logoColor=white)
+![SQLx](https://img.shields.io/badge/SQLx-000?style=flat-square&logo=rust&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000?style=flat-square&logo=jsonwebtokens&logoColor=white)
 
 **インフラ・AI**
@@ -104,12 +111,15 @@ Gemini API キー（無料で取得可能）
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/yourusername/soulmap.git
+git clone https://github.com/mituoka/soulmap.git
 cd soulmap
 
 # 環境変数を設定
-cp backend/.env.example backend/.env
-# backend/.env を編集して GEMINI_API_KEY を設定
+cat > .env << EOF
+DATABASE_URL=postgresql://soulmap:soulmap123@postgres:5432/soulmap_db
+JWT_SECRET_KEY=your-secret-key-change-in-production
+GEMINI_API_KEY=your-gemini-api-key
+EOF
 
 # 起動
 docker compose up -d
@@ -119,7 +129,7 @@ docker compose up -d
 
 1. [Google AI Studio](https://aistudio.google.com/apikey) にアクセス
 2. 「APIキーを作成」をクリック
-3. 取得したキーを `backend/.env` の `GEMINI_API_KEY` に設定
+3. 取得したキーを `.env` の `GEMINI_API_KEY` に設定
 
 ### アクセス先
 
@@ -127,16 +137,15 @@ docker compose up -d
 |:---|:---|
 | フロントエンド | http://localhost:3000 |
 | バックエンドAPI | http://localhost:8000 |
-| APIドキュメント | http://localhost:8000/docs |
 
 ---
 
 ## 環境変数
 
-### バックエンド (backend/.env)
+### ルートディレクトリ (.env)
 
 ```env
-DATABASE_URL=postgresql://soulmap:soulmap123@localhost:5432/soulmap_db
+DATABASE_URL=postgresql://soulmap:soulmap123@postgres:5432/soulmap_db
 JWT_SECRET_KEY=your-secret-key-change-in-production
 GEMINI_API_KEY=your-gemini-api-key
 ```
@@ -177,6 +186,15 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 | `GET` | `/api/v1/analyses/post/{post_id}` | 分析結果取得 |
 | `GET` | `/api/v1/analyses/user/summary` | ユーザーサマリー |
 
+### TODO
+
+| メソッド | エンドポイント | 説明 |
+|:---:|:---|:---|
+| `GET` | `/api/v1/todos` | TODO一覧（日付指定可） |
+| `POST` | `/api/v1/todos` | TODO作成 |
+| `PUT` | `/api/v1/todos/{id}` | TODO更新 |
+| `DELETE` | `/api/v1/todos/{id}` | TODO削除 |
+
 ### アップロード
 
 | メソッド | エンドポイント | 説明 |
@@ -191,25 +209,25 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 soulmap/
 │
 ├── backend/
-│   ├── app/
-│   │   ├── api/v1/          # APIエンドポイント
-│   │   ├── core/            # セキュリティ・AIサービス
-│   │   ├── models/          # SQLAlchemyモデル
-│   │   ├── schemas/         # Pydanticスキーマ
-│   │   ├── config.py        # 設定
-│   │   ├── database.py      # DB接続
-│   │   └── main.py          # FastAPIアプリ
-│   ├── alembic/             # マイグレーション
-│   └── requirements.txt
+│   ├── src/
+│   │   ├── api/            # APIハンドラ
+│   │   ├── auth.rs         # JWT認証
+│   │   ├── db.rs           # データベース操作
+│   │   ├── models.rs       # データモデル
+│   │   ├── ai.rs           # Gemini AI連携
+│   │   └── main.rs         # エントリーポイント
+│   ├── Cargo.toml
+│   └── Dockerfile
 │
 ├── frontend/
-│   ├── app/                 # Next.js App Router
-│   ├── components/          # Reactコンポーネント
-│   ├── hooks/               # カスタムフック
-│   ├── lib/                 # ユーティリティ
-│   └── types/               # TypeScript型定義
+│   ├── app/                # Next.js App Router
+│   ├── components/         # Reactコンポーネント
+│   ├── hooks/              # カスタムフック
+│   ├── lib/                # ユーティリティ
+│   └── types/              # TypeScript型定義
 │
-└── docker-compose.yml
+├── docker-compose.yml
+└── .env
 ```
 
 ---

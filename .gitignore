@@ -1,17 +1,15 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-ENV/
-.env
+# Rust
+target/
+Cargo.lock
+*.rs.bk
 
 # Node
 node_modules/
 .next/
 .env.local
+
+# Environment
+.env
 
 # IDE
 .idea/
@@ -26,5 +24,9 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Uploads
 uploads/
+
+# Claude
 CLAUDE.md

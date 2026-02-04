@@ -24,9 +24,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend/uploads:/app/uploads
     environment:
       - DATABASE_URL=postgresql://soulmap:soulmap123@postgres:5432/soulmap_db
+      - JWT_SECRET_KEY=soulmap-development-secret-key-change-in-production
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - RUST_LOG=info
     depends_on:
       postgres:
         condition: service_healthy
