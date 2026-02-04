@@ -9,10 +9,10 @@ class Settings(BaseSettings):
     # JWT (ローカル認証)
     JWT_SECRET_KEY: str = "your-super-secret-key-change-in-production"
     JWT_ALGORITHM: str = "HS256"
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7日間
 
-    # OpenAI
-    OPENAI_API_KEY: str = ""
+    # AI API
+    GEMINI_API_KEY: str = ""
 
     # App
     DEBUG: bool = True

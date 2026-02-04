@@ -3,27 +3,14 @@
 import { useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useAuth } from '@/components/providers/auth-provider';
 import { usePost, useDeletePost } from '@/hooks/use-posts';
 import { usePostAnalysis, useCreateAnalysis } from '@/hooks/use-analysis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { AnalysisResult } from '@/components/analysis/analysis-result';
 import { ArrowLeft, Edit, Trash2, Brain, Calendar, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
-
-const moodEmojis: Record<string, string> = {
-  happy: '😊',
-  sad: '😢',
-  angry: '😠',
-  excited: '🎉',
-  calm: '😌',
-  anxious: '😰',
-  motivated: '💪',
-  tired: '😴',
-};
 
 export default function PostDetailPage() {
   const router = useRouter();
@@ -79,14 +66,16 @@ export default function PostDetailPage() {
       </div>
 
       <Card className="mb-8">
-        {post.image_url && (
-          <div className="relative h-64 w-full">
-            <Image
-              src={api.getImageUrl(post.image_url)!}
-              alt={post.title || 'Post image'}
-              fill
-              className="object-cover rounded-t-lg"
-            />
+        {post.image_urls?.length > 0 && (
+          <div className="space-y-2 p-4 pb-0">
+            {post.image_urls.map((url, index) => (
+              <img
+                key={index}
+                src={api.getImageUrl(url)!}
+                alt={post.title || `Image ${index + 1}`}
+                className="w-full rounded-lg"
+              />
+            ))}
           </div>
         )}
         <CardHeader>
@@ -95,16 +84,9 @@ export default function PostDetailPage() {
               <CardTitle className="text-2xl mb-2">
                 {post.title || 'Untitled'}
               </CardTitle>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  {new Date(post.created_at).toLocaleDateString()}
-                </span>
-                {post.mood && (
-                  <Badge variant="secondary">
-                    {moodEmojis[post.mood] || ''} {post.mood}
-                  </Badge>
-                )}
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4 mr-1" />
+                {new Date(post.created_at).toLocaleDateString()}
               </div>
             </div>
             <div className="flex gap-2">

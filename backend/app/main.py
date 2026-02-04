@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from app.config import settings
-from app.api.v1 import auth, posts, analyses, uploads
+from app.api.v1 import auth, posts, analyses, uploads, settings as settings_api
 
 app = FastAPI(
     title="SoulMap API",
@@ -30,6 +30,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(posts.router, prefix="/api/v1/posts", tags=["posts"])
 app.include_router(analyses.router, prefix="/api/v1/analyses", tags=["analyses"])
 app.include_router(uploads.router, prefix="/api/v1/uploads", tags=["uploads"])
+app.include_router(settings_api.router, prefix="/api/v1/settings", tags=["settings"])
 
 
 @app.get("/health")

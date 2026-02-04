@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -14,7 +14,7 @@ class Post(Base):
     title = Column(String(255))
     content = Column(Text, nullable=False)
     mood = Column(String(50))
-    image_url = Column(String(500), nullable=True)
+    image_urls = Column(JSON, default=list, server_default='[]')
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     deleted_at = Column(DateTime, nullable=True)

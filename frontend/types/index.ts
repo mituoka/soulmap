@@ -30,7 +30,7 @@ export interface Post {
   title: string | null;
   content: string;
   mood: string | null;
-  image_url: string | null;
+  image_urls: string[];
   created_at: string;
   updated_at: string;
 }
@@ -39,14 +39,21 @@ export interface PostCreate {
   title?: string;
   content: string;
   mood?: string;
-  image_url?: string;
+  image_urls?: string[];
 }
 
 export interface PostUpdate {
   title?: string;
   content?: string;
   mood?: string;
-  image_url?: string;
+  image_urls?: string[];
+}
+
+export interface PostFilters {
+  search?: string;
+  mood?: string;
+  date_from?: string;
+  date_to?: string;
 }
 
 export interface PostListResponse {

@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, date
+from typing import Optional
 from app.database import get_db
 from app.models.user import User
 from app.models.post import Post
@@ -15,16 +17,36 @@ router = APIRouter()
 async def get_posts(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
+    search: Optional[str] = Query(None),
+    mood: Optional[str] = Query(None),
+    date_from: Optional[date] = Query(None),
+    date_to: Optional[date] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """投稿一覧取得"""
+    """投稿一覧取得（検索・フィルタ対応）"""
     offset = (page - 1) * per_page
     query = db.query(Post).filter(
         Post.user_id == current_user.id,
         Post.deleted_at.is_(None)
-    ).order_by(Post.created_at.desc())
+    )
 
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            or_(Post.title.ilike(pattern), Post.content.ilike(pattern))
+        )
+
+    if mood:
+        query = query.filter(Post.mood == mood)
+
+    if date_from:
+        query = query.filter(Post.created_at >= datetime.combine(date_from, datetime.min.time()))
+
+    if date_to:
+        query = query.filter(Post.created_at <= datetime.combine(date_to, datetime.max.time()))
+
+    query = query.order_by(Post.created_at.desc())
     total = query.count()
     posts = query.offset(offset).limit(per_page).all()
 
@@ -66,7 +88,7 @@ async def create_post(
         title=post_data.title,
         content=post_data.content,
         mood=post_data.mood,
-        image_url=post_data.image_url
+        image_urls=post_data.image_urls
     )
     db.add(post)
     db.commit()

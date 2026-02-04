@@ -1,262 +1,220 @@
 <div align="center">
 
 <!-- Header -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=SoulMap&fontSize=42&fontColor=fff&animation=twinkling&fontAlignY=32&desc=AI-Powered%20Journal%20Analysis&descSize=18&descAlignY=52"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=SoulMap&fontSize=42&fontColor=fff&animation=twinkling&fontAlignY=32&desc=AI%E6%97%A5%E8%A8%98%E5%88%86%E6%9E%90%E3%82%A2%E3%83%97%E3%83%AA&descSize=18&descAlignY=52"/>
 
 <!-- Badges -->
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 
 <p align="center">
-  <b>日記を分析してあなたの感情・性格傾向を可視化するアプリケーション</b>
+  <b>日記を書くだけで、AIがあなたの感情・性格傾向を可視化</b>
 </p>
 
-[Features](#features) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [API](#api-endpoints) • [Structure](#project-structure)
+[機能](#機能) • [技術スタック](#技術スタック) • [セットアップ](#セットアップ) • [API](#api-エンドポイント)
 
 </div>
 
 ---
 
-## Features
+## 機能
 
 <div align="center">
 
-| Journal | Mood | AI Analysis | Insights |
+| ジャーナル | 画像 | AI分析 | ダークモード |
 |:---:|:---:|:---:|:---:|
-| テキスト＋画像 | 気分タグ記録 | GPT-4分析 | データ可視化 |
+| テキスト投稿 | 複数画像対応 | Gemini分析 | ライト/ダーク切替 |
+| 検索・フィルタ | D&D/ペースト | 感情・性格分析 | システム連動 |
 
 </div>
 
 <br>
 
-### AI Analysis
+### AI分析機能
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Emotions      Joy • Sadness • Anger • Fear • Surprise          │
+│  感情分析      喜び・悲しみ・怒り・恐れ・驚き                      │
 ├─────────────────────────────────────────────────────────────────┤
-│  Personality   Big Five Model (O・C・E・A・N)                    │
+│  性格傾向      ビッグファイブ（O・C・E・A・N）                     │
 ├─────────────────────────────────────────────────────────────────┤
-│  Topics        Auto-extracted from journal entries              │
+│  トピック      日記から自動抽出                                   │
 ├─────────────────────────────────────────────────────────────────┤
-│  Interests     Identify recurring themes                        │
+│  関心事        繰り返し出現するテーマを特定                        │
 ├─────────────────────────────────────────────────────────────────┤
-│  Summary       Cross-post trend analysis                        │
+│  サマリー      複数投稿からの傾向分析                              │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+### 投稿機能
+
+- **複数画像アップロード**: 1投稿に複数の画像を添付可能
+- **ドラッグ&ドロップ**: 画像をドラッグして直接アップロード
+- **ペースト対応**: クリップボードから画像を貼り付け
+- **検索・フィルタ**: キーワード検索、日付範囲でのフィルタリング
+
+### テーマ切り替え
+
+- **ライトモード**: 明るい配色
+- **ダークモード**: 目に優しい暗い配色
+- **システム連動**: OSの設定に自動追従
+
 ---
 
-## Tech Stack
+## 技術スタック
 
 <div align="center">
 
-**Frontend**
+**フロントエンド**
 
 ![Next.js](https://img.shields.io/badge/Next.js_14-000?style=flat-square&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 ![React Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white)
 
-**Backend**
+**バックエンド**
 
 ![Python](https://img.shields.io/badge/Python_3.11+-3776AB?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000?style=flat-square&logo=jsonwebtokens&logoColor=white)
 
-**Infrastructure**
+**インフラ・AI**
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL_15-4169E1?style=flat-square&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI_GPT--4-412991?style=flat-square&logo=openai&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini_Flash-4285F4?style=flat-square&logo=google&logoColor=white)
 
 </div>
 
 ---
 
-## Getting Started
+## セットアップ
 
-### Prerequisites
+### 必要なもの
 
 ```
-Docker & Docker Compose  •  Node.js 18+  •  Python 3.11+
+Docker & Docker Compose
+Gemini API キー（無料で取得可能）
 ```
 
-### Installation
-
-<details>
-<summary><b>1. Clone & Setup Database</b></summary>
+### クイックスタート（Docker）
 
 ```bash
-# Clone the repository
-git clone https://github.com/mituoka/soulmap.git
+# リポジトリをクローン
+git clone https://github.com/yourusername/soulmap.git
 cd soulmap
 
-# Start PostgreSQL
-docker-compose up -d
+# 環境変数を設定
+cp backend/.env.example backend/.env
+# backend/.env を編集して GEMINI_API_KEY を設定
+
+# 起動
+docker compose up -d
 ```
 
-</details>
+### Gemini API キーの取得
 
-<details>
-<summary><b>2. Backend Setup</b></summary>
+1. [Google AI Studio](https://aistudio.google.com/apikey) にアクセス
+2. 「APIキーを作成」をクリック
+3. 取得したキーを `backend/.env` の `GEMINI_API_KEY` に設定
 
-```bash
-cd backend
+### アクセス先
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Create .env file
-cp .env.example .env
-# Edit .env and set your OPENAI_API_KEY
-
-# Run migrations
-alembic upgrade head
-
-# Start server
-uvicorn app.main:app --reload --port 8000
-```
-
-</details>
-
-<details>
-<summary><b>3. Frontend Setup</b></summary>
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create .env.local
-echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
-
-# Start dev server
-npm run dev
-```
-
-</details>
-
-### Access Points
-
-| Service | URL |
+| サービス | URL |
 |:---|:---|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000 |
-| API Docs | http://localhost:8000/docs |
+| フロントエンド | http://localhost:3000 |
+| バックエンドAPI | http://localhost:8000 |
+| APIドキュメント | http://localhost:8000/docs |
 
 ---
 
-## Environment Variables
+## 環境変数
 
-<details>
-<summary><b>Backend (.env)</b></summary>
+### バックエンド (backend/.env)
 
 ```env
 DATABASE_URL=postgresql://soulmap:soulmap123@localhost:5432/soulmap_db
 JWT_SECRET_KEY=your-secret-key-change-in-production
-OPENAI_API_KEY=sk-your-openai-api-key
+GEMINI_API_KEY=your-gemini-api-key
 ```
 
-</details>
-
-<details>
-<summary><b>Frontend (.env.local)</b></summary>
+### フロントエンド (frontend/.env.local)
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-</details>
+---
+
+## API エンドポイント
+
+### 認証
+
+| メソッド | エンドポイント | 説明 |
+|:---:|:---|:---|
+| `POST` | `/api/v1/auth/register` | ユーザー登録 |
+| `POST` | `/api/v1/auth/login` | ログイン |
+| `GET` | `/api/v1/auth/me` | 現在のユーザー情報 |
+
+### 投稿
+
+| メソッド | エンドポイント | 説明 |
+|:---:|:---|:---|
+| `GET` | `/api/v1/posts` | 投稿一覧（検索・フィルタ対応） |
+| `GET` | `/api/v1/posts/{id}` | 投稿詳細 |
+| `POST` | `/api/v1/posts` | 新規投稿 |
+| `PUT` | `/api/v1/posts/{id}` | 投稿更新 |
+| `DELETE` | `/api/v1/posts/{id}` | 投稿削除 |
+
+### 分析
+
+| メソッド | エンドポイント | 説明 |
+|:---:|:---|:---|
+| `POST` | `/api/v1/analyses/create` | AI分析を実行 |
+| `GET` | `/api/v1/analyses/post/{post_id}` | 分析結果取得 |
+| `GET` | `/api/v1/analyses/user/summary` | ユーザーサマリー |
+
+### アップロード
+
+| メソッド | エンドポイント | 説明 |
+|:---:|:---|:---|
+| `POST` | `/api/v1/uploads/image` | 画像アップロード |
 
 ---
 
-## API Endpoints
-
-<details>
-<summary><b>Authentication</b></summary>
-
-| Method | Endpoint | Description |
-|:---:|:---|:---|
-| `POST` | `/api/v1/auth/register` | Register |
-| `POST` | `/api/v1/auth/login` | Login |
-| `GET` | `/api/v1/auth/me` | Current user |
-
-</details>
-
-<details>
-<summary><b>Posts</b></summary>
-
-| Method | Endpoint | Description |
-|:---:|:---|:---|
-| `GET` | `/api/v1/posts` | List posts |
-| `GET` | `/api/v1/posts/{id}` | Get post |
-| `POST` | `/api/v1/posts` | Create post |
-| `PUT` | `/api/v1/posts/{id}` | Update post |
-| `DELETE` | `/api/v1/posts/{id}` | Delete post |
-
-</details>
-
-<details>
-<summary><b>Analyses</b></summary>
-
-| Method | Endpoint | Description |
-|:---:|:---|:---|
-| `POST` | `/api/v1/analyses/create` | Run analysis |
-| `GET` | `/api/v1/analyses/post/{post_id}` | Get result |
-| `GET` | `/api/v1/analyses/user/summary` | User summary |
-
-</details>
-
-<details>
-<summary><b>Uploads</b></summary>
-
-| Method | Endpoint | Description |
-|:---:|:---|:---|
-| `POST` | `/api/v1/uploads/image` | Upload image |
-
-</details>
-
----
-
-## Project Structure
+## プロジェクト構成
 
 ```
 soulmap/
 │
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/          # API endpoints
-│   │   ├── core/            # Security & AI service
-│   │   ├── models/          # SQLAlchemy models
-│   │   ├── schemas/         # Pydantic schemas
-│   │   ├── config.py        # Configuration
-│   │   ├── database.py      # DB connection
-│   │   └── main.py          # FastAPI app
-│   ├── alembic/             # Migrations
+│   │   ├── api/v1/          # APIエンドポイント
+│   │   ├── core/            # セキュリティ・AIサービス
+│   │   ├── models/          # SQLAlchemyモデル
+│   │   ├── schemas/         # Pydanticスキーマ
+│   │   ├── config.py        # 設定
+│   │   ├── database.py      # DB接続
+│   │   └── main.py          # FastAPIアプリ
+│   ├── alembic/             # マイグレーション
 │   └── requirements.txt
 │
 ├── frontend/
 │   ├── app/                 # Next.js App Router
-│   ├── components/          # React components
-│   ├── hooks/               # Custom hooks
-│   ├── lib/                 # Utilities
-│   └── types/               # TypeScript definitions
+│   ├── components/          # Reactコンポーネント
+│   ├── hooks/               # カスタムフック
+│   ├── lib/                 # ユーティリティ
+│   └── types/               # TypeScript型定義
 │
 └── docker-compose.yml
 ```
 
 ---
 
-## License
+## ライセンス
 
 <div align="center">
 

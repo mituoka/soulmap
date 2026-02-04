@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { Post, PostCreate, PostUpdate } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,16 +17,18 @@ interface PostFormProps {
   isEditing?: boolean;
 }
 
-const moods = [
-  { value: 'happy', label: 'Happy', emoji: '😊' },
-  { value: 'sad', label: 'Sad', emoji: '😢' },
-  { value: 'angry', label: 'Angry', emoji: '😠' },
-  { value: 'excited', label: 'Excited', emoji: '🎉' },
-  { value: 'calm', label: 'Calm', emoji: '😌' },
-  { value: 'anxious', label: 'Anxious', emoji: '😰' },
-  { value: 'motivated', label: 'Motivated', emoji: '💪' },
-  { value: 'tired', label: 'Tired', emoji: '😴' },
-];
+interface ImageItem {
+  url: string;
+  preview: string;
+}
+
+const MAX_FILE_SIZE_MB = 50;
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff', 'image/heic', 'image/heif', 'image/svg+xml'];
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)}KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+}
 
 export function PostForm({ post, isEditing = false }: PostFormProps) {
   const router = useRouter();
@@ -37,43 +38,109 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 
   const [title, setTitle] = useState(post?.title || '');
   const [content, setContent] = useState(post?.content || '');
-  const [mood, setMood] = useState(post?.mood || '');
-  const [imageUrl, setImageUrl] = useState(post?.image_url || '');
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    post?.image_url ? api.getImageUrl(post.image_url) : null
+  const [images, setImages] = useState<ImageItem[]>(
+    (post?.image_urls || []).map((url) => ({
+      url,
+      preview: api.getImageUrl(url) || '',
+    }))
   );
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const validateFile = (file: File): string | null => {
+    const fileSizeMB = file.size / 1024 / 1024;
+    if (fileSizeMB > MAX_FILE_SIZE_MB) {
+      return `ファイルサイズが大きすぎます（${formatFileSize(file.size)}）。上限: ${MAX_FILE_SIZE_MB}MB`;
+    }
+    if (file.type && !ALLOWED_TYPES.includes(file.type)) {
+      return '対応していないファイル形式です。対応形式: JPG, PNG, GIF, WebP, BMP, TIFF, HEIC, SVG';
+    }
+    return null;
+  };
+
+  const uploadFiles = useCallback(async (files: File[]) => {
+    setUploadError(null);
+
+    for (const file of files) {
+      const error = validateFile(file);
+      if (error) {
+        setUploadError(error);
+        continue;
+      }
+
+      // プレビュー作成
+      const preview = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      // アップロード
+      setUploading(true);
+      try {
+        const result = await api.uploadImage(file);
+        setImages((prev) => [...prev, { url: result.url, preview }]);
+      } catch (err) {
+        console.error('Upload failed:', err);
+        setUploadError(err instanceof Error ? err.message : '画像のアップロードに失敗しました');
+      } finally {
+        setUploading(false);
+      }
+    }
+  }, []);
 
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    await uploadFiles(files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
-    // プレビュー表示
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+  const handleRemoveImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
-    // アップロード
-    setUploading(true);
-    try {
-      const result = await api.uploadImage(file);
-      setImageUrl(result.url);
-    } catch (error) {
-      console.error('Upload failed:', error);
-      setImagePreview(null);
-      alert('画像のアップロードに失敗しました');
-    } finally {
-      setUploading(false);
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.currentTarget === e.target) {
+      setIsDragging(false);
     }
   };
 
-  const handleRemoveImage = () => {
-    setImageUrl('');
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith('image/')
+    );
+    if (files.length > 0) {
+      await uploadFiles(files);
+    }
+  };
+
+  const handlePaste = async (e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData.items);
+    const imageFiles = items
+      .filter((item) => item.type.startsWith('image/'))
+      .map((item) => item.getAsFile())
+      .filter((f): f is File => f !== null);
+    if (imageFiles.length > 0) {
+      e.preventDefault();
+      await uploadFiles(imageFiles);
     }
   };
 
@@ -83,8 +150,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
     const data: PostCreate | PostUpdate = {
       title: title || undefined,
       content,
-      mood: mood || undefined,
-      image_url: imageUrl || undefined,
+      image_urls: images.map((img) => img.url),
     };
 
     try {
@@ -97,6 +163,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
       }
     } catch (error) {
       console.error('Failed to save post:', error);
+      setUploadError(error instanceof Error ? error.message : '投稿の保存に失敗しました');
     }
   };
 
@@ -104,7 +171,13 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Card>
+      <Card
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={isDragging ? 'ring-2 ring-primary ring-offset-2' : ''}
+      >
         <CardHeader>
           <CardTitle>{isEditing ? 'Edit Post' : 'New Post'}</CardTitle>
         </CardHeader>
@@ -125,6 +198,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onPaste={handlePaste}
               placeholder="Write your thoughts..."
               required
               rows={8}
@@ -133,67 +207,63 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 
           {/* 画像アップロード */}
           <div className="space-y-2">
-            <Label>Image (optional)</Label>
+            <Label>Images (optional)</Label>
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif"
+              multiple
               onChange={handleImageSelect}
               className="hidden"
             />
 
-            {imagePreview ? (
-              <div className="relative inline-block">
-                <Image
-                  src={imagePreview}
-                  alt="Preview"
-                  width={300}
-                  height={200}
-                  className="rounded-lg object-cover max-h-[200px] w-auto"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8"
-                  onClick={handleRemoveImage}
-                  disabled={uploading}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                {uploading && (
-                  <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 text-white animate-spin" />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                <ImagePlus className="h-4 w-4 mr-2" />
-                Add Image
-              </Button>
+            {uploadError && (
+              <p className="text-sm text-red-500">{uploadError}</p>
             )}
-          </div>
 
-          <div className="space-y-2">
-            <Label>Mood (optional)</Label>
-            <div className="flex flex-wrap gap-2">
-              {moods.map((m) => (
-                <Button
-                  key={m.value}
-                  type="button"
-                  variant={mood === m.value ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setMood(mood === m.value ? '' : m.value)}
-                >
-                  {m.emoji} {m.label}
-                </Button>
-              ))}
+            {images.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                {images.map((img, index) => (
+                  <div key={index} className="relative inline-block">
+                    <img
+                      src={img.preview}
+                      alt={`Image ${index + 1}`}
+                      className="rounded-lg max-w-full max-h-[200px] w-auto h-auto"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => handleRemoveImage(index)}
+                      disabled={uploading}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {uploading && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                アップロード中...
+              </div>
+            )}
+
+            <div
+              className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                isDragging
+                  ? 'border-primary bg-primary/5'
+                  : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+              }`}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <ImagePlus className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                クリック、ドラッグ&ドロップ、またはペーストで画像を追加
+              </p>
             </div>
           </div>
         </CardContent>

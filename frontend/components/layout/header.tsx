@@ -12,12 +12,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { BookOpen, BarChart3, Home, LogOut, User } from 'lucide-react';
+import { ModelSelector } from './model-selector';
+import { ThemeToggle } from './theme-toggle';
 
 export function Header() {
   const { user, logout, isAuthenticated } = useAuth();
 
   return (
-    <header className="border-b bg-white">
+    <header className="border-b bg-background">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2">
           <BookOpen className="h-6 w-6 text-primary" />
@@ -45,6 +47,9 @@ export function Header() {
               </Button>
             </Link>
 
+            <ModelSelector />
+            <ThemeToggle />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
@@ -70,7 +75,8 @@ export function Header() {
           </nav>
         ) : (
           <nav className="flex items-center gap-2">
-            <Link href="/login">
+            <ThemeToggle />
+            <Link href="/">
               <Button variant="ghost">Login</Button>
             </Link>
             <Link href="/register">

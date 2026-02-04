@@ -6,21 +6,63 @@ import Link from 'next/link';
 import { useAuth } from '@/components/providers/auth-provider';
 import { usePosts } from '@/hooks/use-posts';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { PostCard } from '@/components/posts/post-card';
-import { PenLine, BookOpen } from 'lucide-react';
+import { PenLine, BookOpen, Search, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { PostFilters } from '@/types';
 
 export default function PostsPage() {
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [page, setPage] = useState(1);
-  const { data, isLoading } = usePosts(page);
+  const [filters, setFilters] = useState<PostFilters>({});
+  const [searchInput, setSearchInput] = useState('');
+  const { data, isLoading } = usePosts(page, filters);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/login');
     }
   }, [isAuthenticated, authLoading, router]);
+
+  // デバウンス検索
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters((prev) => {
+        const next = { ...prev };
+        if (searchInput) {
+          next.search = searchInput;
+        } else {
+          delete next.search;
+        }
+        return next;
+      });
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handleDateChange = (field: 'date_from' | 'date_to', value: string) => {
+    setFilters((prev) => {
+      const next = { ...prev };
+      if (value) {
+        next[field] = value;
+      } else {
+        delete next[field];
+      }
+      return next;
+    });
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setFilters({});
+    setSearchInput('');
+    setPage(1);
+  };
+
+  const hasFilters = searchInput || filters.date_from || filters.date_to;
 
   if (authLoading) {
     return (
@@ -38,7 +80,7 @@ export default function PostsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Your Posts</h1>
           <p className="text-muted-foreground">
@@ -51,6 +93,40 @@ export default function PostsPage() {
             New Post
           </Button>
         </Link>
+      </div>
+
+      {/* フィルタバー */}
+      <div className="space-y-3 mb-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search posts..."
+              className="pl-9"
+            />
+          </div>
+          <Input
+            type="date"
+            value={filters.date_from || ''}
+            onChange={(e) => handleDateChange('date_from', e.target.value)}
+            className="w-auto"
+          />
+          <span className="text-muted-foreground text-sm">~</span>
+          <Input
+            type="date"
+            value={filters.date_to || ''}
+            onChange={(e) => handleDateChange('date_to', e.target.value)}
+            className="w-auto"
+          />
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <X className="h-4 w-4 mr-1" />
+              Clear
+            </Button>
+          )}
+        </div>
       </div>
 
       {isLoading ? (
@@ -91,10 +167,14 @@ export default function PostsPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">No posts yet. Start your journey!</p>
-            <Link href="/posts/new">
-              <Button>Write Your First Post</Button>
-            </Link>
+            <p className="text-muted-foreground mb-4">
+              {hasFilters ? 'No posts match your filters.' : 'No posts yet. Start your journey!'}
+            </p>
+            {!hasFilters && (
+              <Link href="/posts/new">
+                <Button>Write Your First Post</Button>
+              </Link>
+            )}
           </CardContent>
         </Card>
       )}

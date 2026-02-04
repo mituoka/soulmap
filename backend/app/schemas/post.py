@@ -7,7 +7,7 @@ class PostBase(BaseModel):
     title: Optional[str] = None
     content: str
     mood: Optional[str] = None
-    image_url: Optional[str] = None
+    image_urls: List[str] = []
 
 
 class PostCreate(PostBase):
@@ -18,7 +18,7 @@ class PostUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
     mood: Optional[str] = None
-    image_url: Optional[str] = None
+    image_urls: Optional[List[str]] = None
 
 
 class PostResponse(PostBase):

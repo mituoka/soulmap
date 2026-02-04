@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Post } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Edit, Trash2, ImageIcon } from 'lucide-react';
 import { useDeletePost } from '@/hooks/use-posts';
 import { api } from '@/lib/api';
 
@@ -14,20 +13,9 @@ interface PostCardProps {
   post: Post;
 }
 
-const moodEmojis: Record<string, string> = {
-  happy: '😊',
-  sad: '😢',
-  angry: '😠',
-  excited: '🎉',
-  calm: '😌',
-  anxious: '😰',
-  motivated: '💪',
-  tired: '😴',
-};
-
 export function PostCard({ post }: PostCardProps) {
   const deletePost = useDeletePost();
-  const imageUrl = api.getImageUrl(post.image_url);
+  const imageUrls = (post.image_urls || []).map((url) => api.getImageUrl(url)).filter(Boolean);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,27 +27,25 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Card className="hover:shadow-md transition-shadow overflow-hidden">
       <Link href={`/posts/${post.id}`}>
-        {imageUrl && (
-          <div className="relative h-40 w-full">
-            <Image
-              src={imageUrl}
+        {imageUrls.length > 0 && (
+          <div className="relative w-full">
+            <img
+              src={imageUrls[0]!}
               alt={post.title || 'Post image'}
-              fill
-              className="object-cover"
+              className="w-full max-h-[300px] object-contain"
             />
-          </div>
-        )}
-        <CardHeader className="pb-2">
-          <div className="flex items-start justify-between">
-            <CardTitle className="text-lg line-clamp-1">
-              {post.title || 'Untitled'}
-            </CardTitle>
-            {post.mood && (
-              <Badge variant="secondary" className="ml-2">
-                {moodEmojis[post.mood] || ''} {post.mood}
+            {imageUrls.length > 1 && (
+              <Badge variant="secondary" className="absolute top-2 right-2 gap-1">
+                <ImageIcon className="h-3 w-3" />
+                {imageUrls.length}
               </Badge>
             )}
           </div>
+        )}
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg line-clamp-1">
+            {post.title || 'Untitled'}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm line-clamp-3">

@@ -2,12 +2,19 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Post, PostCreate, PostUpdate, PostListResponse } from '@/types';
+import { Post, PostCreate, PostUpdate, PostListResponse, PostFilters } from '@/types';
 
-export function usePosts(page: number = 1) {
+export function usePosts(page: number = 1, filters: PostFilters = {}) {
   return useQuery({
-    queryKey: ['posts', page],
-    queryFn: () => api.get<PostListResponse>(`/api/v1/posts?page=${page}`),
+    queryKey: ['posts', page, filters],
+    queryFn: () => {
+      const params = new URLSearchParams({ page: String(page) });
+      if (filters.search) params.set('search', filters.search);
+      if (filters.mood) params.set('mood', filters.mood);
+      if (filters.date_from) params.set('date_from', filters.date_from);
+      if (filters.date_to) params.set('date_to', filters.date_to);
+      return api.get<PostListResponse>(`/api/v1/posts?${params.toString()}`);
+    },
   });
 }
 
