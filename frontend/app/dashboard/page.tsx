@@ -9,6 +9,7 @@ import { useUserSummary } from '@/hooks/use-analysis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PostCard } from '@/components/posts/post-card';
+import { TodoList } from '@/components/dashboard/todo-list';
 import { PenLine, BookOpen, BarChart3 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -52,49 +53,60 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{postsData?.total || 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Posts Analyzed</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{summary?.total_posts_analyzed || 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Main Interests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-muted-foreground">
-              {summary?.summary?.key_interests?.slice(0, 3).join(', ') || 'Start writing to discover'}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Main Content Grid */}
+      <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        {/* Left: Stats + Summary */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Stats Cards */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{postsData?.total || 0}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Posts Analyzed</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{summary?.total_posts_analyzed || 0}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Main Interests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground">
+                  {summary?.summary?.key_interests?.slice(0, 3).join(', ') || 'Start writing to discover'}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-      {/* Summary Card */}
-      {summary?.summary?.overall_summary && (
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Your Journey So Far</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{summary.summary.overall_summary}</p>
-          </CardContent>
-        </Card>
-      )}
+          {/* Summary Card */}
+          {summary?.summary?.overall_summary && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Journey So Far</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{summary.summary.overall_summary}</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Right: TODO List */}
+        <div>
+          <TodoList />
+        </div>
+      </div>
 
       {/* Recent Posts */}
       <div className="mb-8">

@@ -110,3 +110,23 @@ export interface UserSummary {
     recommendations: string[];
   };
 }
+
+// Todo types
+export interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+  date: string;
+  created_at: string;
+}
+
+export interface TodoCreate {
+  title: string;
+  date: string;
+}
+
+export interface TodoUpdate {
+  title?: string;
+  completed?: boolean;
+  date?: string;
+}
