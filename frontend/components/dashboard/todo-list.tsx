@@ -52,7 +52,7 @@ export function TodoList() {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <ListTodo className="h-5 w-5" />
-          Today&apos;s TODO
+          今日のTODO
           {todos.length > 0 && (
             <span className="text-sm font-normal text-muted-foreground">
               ({completedCount}/{todos.length})

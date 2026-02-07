@@ -72,6 +72,8 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/v1/todos/:id", put(api::todos::update_todo))
         .route("/api/v1/todos/:id", delete(api::todos::delete_todo))
         .route("/api/v1/settings/models", get(api::settings::get_models))
+        .route("/api/v1/chat/message", post(api::chat::chat))
+        .route("/api/v1/chat/summarize", post(api::chat::summarize))
         .nest_service("/uploads", ServeDir::new("uploads"))
         .layer(cors)
         .with_state(state);

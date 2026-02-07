@@ -130,3 +130,19 @@ export interface TodoUpdate {
   completed?: boolean;
   date?: string;
 }
+
+// Chat types
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatResponse {
+  message: ChatMessage;
+  should_summarize: boolean;
+}
+
+export interface SummarizeResponse {
+  title: string;
+  content: string;
+}

@@ -9,7 +9,7 @@ import { usePostAnalysis, useCreateAnalysis } from '@/hooks/use-analysis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AnalysisResult } from '@/components/analysis/analysis-result';
-import { ArrowLeft, Edit, Trash2, Brain, Calendar, Loader2 } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Brain, Calendar, Loader2, AlertTriangle } from 'lucide-react';
 import { api } from '@/lib/api';
 
 export default function PostDetailPage() {
@@ -37,7 +37,12 @@ export default function PostDetailPage() {
   };
 
   const handleAnalyze = async () => {
-    await createAnalysis.mutateAsync(postId);
+    try {
+      await createAnalysis.mutateAsync(postId);
+    } catch (error) {
+      // エラーはcreateAnalysis.errorで取得できる
+      console.error('Analysis failed:', error);
+    }
   };
 
   if (authLoading || postLoading) {
@@ -138,8 +143,23 @@ export default function PostDetailPage() {
             <CardContent className="flex items-center justify-center py-12">
               <div className="text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Analyzing your post...</p>
+                <p className="text-muted-foreground">分析中...</p>
               </div>
+            </CardContent>
+          </Card>
+        ) : createAnalysis.isError ? (
+          <Card className="border-destructive/50">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
+              <p className="text-destructive font-medium mb-2">分析に失敗しました</p>
+              <p className="text-muted-foreground text-sm text-center max-w-md mb-4">
+                {createAnalysis.error?.message?.includes('レート制限')
+                  ? 'AI APIのレート制限に達しました。しばらく時間をおいてから再度お試しください。（毎日午前9時にリセットされます）'
+                  : 'エラーが発生しました。しばらくしてから再度お試しください。'}
+              </p>
+              <Button onClick={handleAnalyze} variant="outline">
+                再試行
+              </Button>
             </CardContent>
           </Card>
         ) : hasAnalysis ? (
@@ -149,7 +169,7 @@ export default function PostDetailPage() {
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Brain className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-muted-foreground mb-4">
-                No analysis yet. Click the button above to analyze this post.
+                まだ分析されていません。上のボタンをクリックして分析を開始してください。
               </p>
             </CardContent>
           </Card>

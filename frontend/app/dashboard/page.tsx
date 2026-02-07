@@ -1,22 +1,30 @@
 'use client';
 
+/**
+ * ダッシュボードページ
+ *
+ * ユーザーのホーム画面。以下を表示:
+ * - TODOリスト（今日のタスク）
+ * - 最近の投稿一覧
+ *
+ * 注意: このページではAI APIを呼び出さない（レート制限対策）
+ */
+
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/auth-provider';
 import { usePosts } from '@/hooks/use-posts';
-import { useUserSummary } from '@/hooks/use-analysis';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { PostCard } from '@/components/posts/post-card';
 import { TodoList } from '@/components/dashboard/todo-list';
-import { PenLine, BookOpen, BarChart3 } from 'lucide-react';
+import { PenLine, BookOpen } from 'lucide-react';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading, user } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { data: postsData, isLoading: postsLoading } = usePosts(1);
-  const { data: summary } = useUserSummary();
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -40,81 +48,27 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Welcome back, {user?.username}!</h1>
-          <p className="text-muted-foreground">Here&apos;s an overview of your journal</p>
-        </div>
+      <div className="flex justify-end mb-6">
         <Link href="/posts/new">
           <Button>
             <PenLine className="h-4 w-4 mr-2" />
-            New Post
+            新しい投稿
           </Button>
         </Link>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-3 gap-6 mb-8">
-        {/* Left: Stats + Summary */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{postsData?.total || 0}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Posts Analyzed</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{summary?.total_posts_analyzed || 0}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Main Interests</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  {summary?.summary?.key_interests?.slice(0, 3).join(', ') || 'Start writing to discover'}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Summary Card */}
-          {summary?.summary?.overall_summary && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Journey So Far</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{summary.summary.overall_summary}</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Right: TODO List */}
-        <div>
-          <TodoList />
-        </div>
+      {/* Today's TODO */}
+      <div className="mb-8">
+        <TodoList />
       </div>
 
-      {/* Recent Posts */}
+      {/* 最近の投稿 */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Recent Posts</h2>
+          <h2 className="text-xl font-semibold">最近の投稿</h2>
           <Link href="/posts">
             <Button variant="ghost" size="sm">
-              View All
+              すべて見る
             </Button>
           </Link>
         </div>
@@ -133,9 +87,9 @@ export default function DashboardPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">No posts yet. Start your journey!</p>
+              <p className="text-muted-foreground mb-4">まだ投稿がありません。最初の一歩を踏み出しましょう！</p>
               <Link href="/posts/new">
-                <Button>Write Your First Post</Button>
+                <Button>最初の投稿を書く</Button>
               </Link>
             </CardContent>
           </Card>

@@ -1,17 +1,31 @@
 'use client';
 
+/**
+ * 分析サマリーページ
+ *
+ * ユーザーの日記分析結果の全体的な傾向を表示。
+ * - 全体的なサマリー
+ * - 主要な感情
+ * - 関心事
+ * - 性格傾向
+ * - おすすめ
+ *
+ * 注意: このページを開くとAI APIを呼び出して要約を生成する
+ */
+
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/auth-provider';
 import { useUserSummary } from '@/hooks/use-analysis';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Heart, Lightbulb, Target } from 'lucide-react';
+import { Brain, Heart, Lightbulb, Target, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function AnalysisPage() {
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { data: summary, isLoading } = useUserSummary();
+  const { data: summary, isLoading, error, refetch } = useUserSummary();
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -33,16 +47,39 @@ export default function AnalysisPage() {
 
   const hasSummary = summary && summary.total_posts_analyzed > 0;
 
+  // レート制限エラーかどうかをチェック
+  const isRateLimited = summary?.summary?.overall_summary?.includes('レート制限') ||
+    error?.message?.includes('レート制限');
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Analysis Summary</h1>
+        <h1 className="text-3xl font-bold">分析サマリー</h1>
         <p className="text-muted-foreground">
-          Insights from {summary?.total_posts_analyzed || 0} analyzed posts
+          {summary?.total_posts_analyzed || 0}件の分析結果に基づく傾向
         </p>
       </div>
 
-      {hasSummary ? (
+      {/* レート制限エラー表示 */}
+      {isRateLimited && (
+        <Card className="border-destructive/50 mb-6">
+          <CardContent className="flex items-center gap-4 py-4">
+            <AlertTriangle className="h-8 w-8 text-destructive flex-shrink-0" />
+            <div className="flex-1">
+              <p className="font-medium text-destructive">AI APIのレート制限に達しました</p>
+              <p className="text-sm text-muted-foreground">
+                しばらく時間をおいてから再度お試しください。（毎日午前9時にリセットされます）
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              再試行
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {hasSummary && !isRateLimited ? (
         <div className="grid gap-6">
           {/* Overall Summary */}
           <Card>
@@ -149,15 +186,15 @@ export default function AnalysisPage() {
             </CardContent>
           </Card>
         </div>
-      ) : (
+      ) : !isRateLimited && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Brain className="h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-muted-foreground text-center mb-2">
-              No analysis data yet.
+              まだ分析データがありません
             </p>
             <p className="text-muted-foreground text-center text-sm">
-              Write some posts and analyze them to see your summary here.
+              投稿を作成して分析すると、ここに傾向が表示されます。
             </p>
           </CardContent>
         </Card>

@@ -107,7 +107,7 @@ pub async fn analyze_post(api_key: &str, title: Option<&str>, content: &str) -> 
 
     let client = reqwest::Client::new();
     let url = format!(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={}",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={}",
         api_key
     );
 
@@ -120,7 +120,15 @@ pub async fn analyze_post(api_key: &str, title: Option<&str>, content: &str) -> 
     if !response.status().is_success() {
         let error_text = response.text().await?;
         tracing::error!("Gemini API error: {}", error_text);
-        return Ok((mock_response(&format!("API呼び出しエラー: {}", error_text)), 0));
+
+        // レート制限エラーをわかりやすいメッセージに変換
+        let user_message = if error_text.contains("429") || error_text.contains("RESOURCE_EXHAUSTED") {
+            "AI APIのレート制限に達しました。しばらく時間をおいてから再度お試しください。（毎日午前9時にリセットされます）"
+        } else {
+            "AI APIでエラーが発生しました。しばらくしてから再度お試しください。"
+        };
+
+        return Ok((mock_response(user_message), 0));
     }
 
     let gemini_response: GeminiResponse = response.json().await?;
@@ -195,15 +203,24 @@ JSONのみを返してください。
 
     let client = reqwest::Client::new();
     let url = format!(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={}",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={}",
         api_key
     );
 
     let response = client.post(&url).json(&request).send().await?;
 
     if !response.status().is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+
+        // レート制限エラーをわかりやすいメッセージに変換
+        let message = if error_text.contains("429") || error_text.contains("RESOURCE_EXHAUSTED") {
+            "AI APIのレート制限に達しました。しばらく時間をおいてから再度お試しください。（毎日午前9時にリセットされます）"
+        } else {
+            "サマリー生成でエラーが発生しました"
+        };
+
         return Ok(json!({
-            "overall_summary": "サマリー生成エラー",
+            "overall_summary": message,
             "dominant_emotions": [],
             "key_interests": [],
             "personality_overview": "",

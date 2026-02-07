@@ -15,6 +15,9 @@ import { ImagePlus, X, Loader2 } from 'lucide-react';
 interface PostFormProps {
   post?: Post;
   isEditing?: boolean;
+  prefillTitle?: string;
+  prefillContent?: string;
+  prefillImages?: string[];
 }
 
 interface ImageItem {
@@ -30,16 +33,19 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
 }
 
-export function PostForm({ post, isEditing = false }: PostFormProps) {
+export function PostForm({ post, isEditing = false, prefillTitle = '', prefillContent = '', prefillImages = [] }: PostFormProps) {
   const router = useRouter();
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [title, setTitle] = useState(post?.title || '');
-  const [content, setContent] = useState(post?.content || '');
+  const [title, setTitle] = useState(post?.title || prefillTitle || '');
+  const [content, setContent] = useState(post?.content || prefillContent || '');
+
+  // 画像の初期値: 編集時はpost.image_urls、新規作成時はprefillImages
+  const initialImages = post?.image_urls || prefillImages;
   const [images, setImages] = useState<ImageItem[]>(
-    (post?.image_urls || []).map((url) => ({
+    initialImages.map((url) => ({
       url,
       preview: api.getImageUrl(url) || '',
     }))

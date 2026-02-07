@@ -4,3 +4,4 @@ pub mod analyses;
 pub mod uploads;
 pub mod todos;
 pub mod settings;
+pub mod chat;
